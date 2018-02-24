@@ -10,29 +10,29 @@ const componentFactory: any = {
     }
 };
 
-const _cache: any = {
-
-};
-
-let _provider: Provider;
-
 class Provider {
     index:number = 0;
+     private _cache: any = {
 
-    constructor(){}
+    };
+
+    constructor() {
+        console.log(`Created provider`);
+    }
+
     getComponent(name: string) {
         let component: any = componentFactory[name]();
-        _cache[name + this.index++ ] = component;
+        this._cache[name + this.index++ ] = component;
         return component;
     }
 
     getExistingDirectives() {
-        return Object.keys(_cache).map(key => _cache[key]);
+        return Object.keys(this._cache).map(key => this._cache[key]);
     }
 }
 
-
-export const provider = () => {
-  _provider = _provider || new Provider();
-  return _provider;
+const provider = () => {
+    return new Provider();
 };
+
+export const PROVIDER = provider();

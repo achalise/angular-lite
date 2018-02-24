@@ -1,6 +1,6 @@
 import '../../node_modules/zone.js/dist/zone.js';
 import { AppModule } from './app.config';
-import { provider } from './provider';
+import { PROVIDER } from './provider';
 
 
 /**
@@ -15,23 +15,21 @@ export const bootstrap = (appConfig: AppModule) => {
     let child: Element = document.children[ 0 ];
     console.log(`No of children`, child.childElementCount);
 
-    // Fork a zone with our custom config and run the app in the ZONE!!
+    // Fork a zone with our custom config and run the app in the ZONE!!, re-render every time there is a change
     Zone.current.fork({
         name: 'myZone', onInvokeTask : (parentZoneDelegate, currentZone, targetZone, task, applyThis, applyArgs) => {
             console.log('Invoking task ', task);
             parentZoneDelegate.invokeTask(currentZone, task, applyThis, applyArgs);
             console.log('Completed task', task);
-            // TODO replace this with global change detection trigger
+            // TODO implement a proper change detector, render() is bare bones for example only
             render();
         }
     }).run(() => {
         dfs(child, components, directives,null);
-        render();
     });
 
     function render() {
-        // let dirs: any =  Object.keys(Provider._cache).map(key => Provider._cache[key]);
-        let dirs: any = provider().getExistingDirectives();
+        let dirs: any = PROVIDER.getExistingDirectives();
         dirs.map((d:any) => d.render && d.render());
     }
 };
@@ -49,7 +47,7 @@ function dfs(node: Element, components: any[], directives: any[], currentCompone
     if (names.indexOf(node.tagName.toLowerCase()) > -1) {
         let template = components.filter(t => t.tag === node.tagName.toLowerCase())[ 0 ].template;
         node.innerHTML = template;
-        component = provider().getComponent(components.filter(c => c.tag === node.tagName.toLowerCase())[0].name);
+        component = PROVIDER.getComponent(components.filter(c => c.tag === node.tagName.toLowerCase())[0].name);
         currentComponent = component;
     }
 
@@ -72,7 +70,7 @@ function dfs(node: Element, components: any[], directives: any[], currentCompone
     for (let i = 0; i < attributes.length; i++) {
         let attribute = attributes.item(i);
         if (directivenames.indexOf(attribute.name) > -1) {
-            let directive = provider().getComponent(attribute.name);
+            let directive = PROVIDER.getComponent(attribute.name);
             directive.link(node, currentComponent, attribute.value);
         }
     }

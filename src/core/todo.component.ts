@@ -18,14 +18,9 @@ export class TodoComponent {
     items: string[] = [];
     value: string = '';
 
-    click() {
-        console.log(`The todo component value = ${this.value}`);
-        this.items.push();
-    }
-
     add(val: string) {
         console.log(`The todo component value = ${this.value}`);
-        this.items.push(val);
+        val && this.items.push(val);
         console.log(`Current intems `, this.items);
     }
 

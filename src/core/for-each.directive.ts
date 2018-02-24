@@ -19,16 +19,17 @@ export class ForEachDirective {
         let parts: string[] = expression.split('in');
         this.part = parts[0].trim();
         this.parts = parts[1].trim();
+        this.render();
     }
 
     render() {
-        let elements = this.component[this.parts];
         while(this.parentNode.firstChild) {
             this.parentNode.removeChild(this.parentNode.firstChild);
         }
+        let elements = this.component[this.parts];
         let index = 0;
         elements.forEach((t: any) => {
-            console.log(`The item ` + t);
+            console.log(`The item `, t);
             let node: any = this.node.cloneNode(true);
             console.log(node.innerHTML);
             let text:string = node.innerHTML;
@@ -38,7 +39,6 @@ export class ForEachDirective {
             text = text.replace('index', index++ + '');
             node.innerHTML = text;
             let children: HTMLCollection = node.children;
-            console.log(children);
             this.compileChildren(children);
 
             this.parentNode.appendChild(node);
